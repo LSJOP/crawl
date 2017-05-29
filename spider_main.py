@@ -1,37 +1,42 @@
-#-*-coding:utf-8-*-
-import url_manager,html_downloader,html_parser,html_outputer,sys
+#!/usr/bin/env python2.7
+# -*- coding: UTF-8 -*-
 
-#爬虫总调度端
+# 爬虫调度端
+
+import url_manager, html_downloader, html_outputer, html_parser
+
 class SpiderMain(object):
+    
+    # 初始化url_manager、html_downloader、html_parser、html_outputer四个模块
+    def __init__(self):
+        self.maxcount = 100  #设置最大抓取数据数量
+        self.urls = url_manager.UrlManager()
+        self.downloader = html_downloader.HtmlDownloader()
+        self.parser = html_parser.HtmlParser()
+        self.outputer = html_outputer.HtmlOutputer()
+    
+    # 执行爬虫，爬取1000个root_url下相关的链接，并输出到out_put.html
+    def craw(self, root_url):
+        count = 1
+        self.urls.add_new_url(root_url)
+        while self.urls.has_new_url():
+            try :
+                new_url = self.urls.get_new_url()
+                print 'craw %d : %s' % (count, new_url)
+                html_cont = self.downloader.download(new_url)
+                new_urls,new_data = self.parser.parse(new_url, html_cont)
+                self.urls.add_new_urls(new_urls)
+                self.outputer.collect_data(new_data)
 
-	def __init__(self):
-		self.urls = url_manager.UrlManager()
-		self.downloader = html_downloader.HtmlDownloader()
-		self.parser = html_parser.HtmlParser()
-		self.outputer = html_outputer.HtmlOutputer()
+                if count == self.maxcount:
+                    break
+                count = count + 1
+            except:
+                print 'craw failed'
 
-	def craw(self,root_url):
-		count = 1
-		self.urls.add_new_url(root_url)
-		while self.urls.has_new_url():
-			new_url = self.urls.get_new_url()
-			print 'craw %d : %s' %(count,new_url)
-			html_cont = self.downloader.download(new_url)
-			new_urls,new_data = self.parser.parse(new_url,html_cont)
-			self.urls.add_new_urls(new_urls)
-			self.outputer.collect_data(new_data)
+        self.outputer.output_html()
 
-			if count == 1000:
-				break
-
-			count = count + 1
-		
-			print 'craw failed'
-				
-		self.outputer.output_html()
-
-if __name__=="__main__":
-	#sys.setrecursionlimit(100000) #手动设置递归深度
-	root_url = "http://baike.baidu.com/item/Python"
-	obj_spider = SpiderMain()
-	obj_spider.craw(root_url)
+if __name__ == "__main__":
+    root_url = "http://baike.baidu.com/item/Python"
+    obj_spider = SpiderMain()
+    obj_spider.craw(root_url)

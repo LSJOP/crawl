@@ -1,30 +1,31 @@
-#-*-coding:utf-8-*-
+#!/usr/bin/env python2.7
+# -*- coding: UTF-8 -*-
 
+# 页面数据输出模块：将抓取的信息以utf-8格式输出
 class HtmlOutputer(object):
-	def __init__(self):
-		self.datas = []
 
-	def collect_data(self,data):
-		if data is None:
-			return
-		self.datas.append(data)
+    def __init__(self):
+        self.datas = []
 
-	def output_html(self):
-		fout = open('output.html','w')
+    def collect_data(self,data):
+        if data is None:
+            return
+        self.datas.append(data)
 
-		fout.write("<html>")
-		fout.write("<body>")
-		fout.write("<table>") #表格标签
+    def output_html(self):
+        fout = open('output.html','w')
+        fout.write("<html>")
+        fout.write("<body>")
+        fout.write("<table>")
 
-		for data in self.datas:
-			fout.write("<tr>")  										#行标签
-			fout.write("<td>%s</td>" % data['url'])						#单元格
-			fout.write("<td>%s</td>" % data['title'].encode('utf-8'))
-			fout.write("<td>%s</td>" % data['summary'].encode('utf-8'))
-			fout.write("</tr>")
+        for data in self.datas:
+            fout.write("<tr>")
+            fout.write("<td>%s</td>" % data['url'])
+            fout.write("<td>%s</td>" % data['title'].encode('utf-8'))
+            fout.write("<td>%s</td>" % data['summary'].encode('utf-8'))
+            fout.write("</tr>")
 
-		fout.write("</table>")
-		fout.write("</html>")
-		fout.write("</html>")
-
-		fout.close()
+        fout.write("</table>")
+        fout.write("</body>")
+        fout.write("</html>")
+        fout.close()
